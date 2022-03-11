@@ -3,8 +3,12 @@ using CleanArchMvc.Domain.Interfaces.Base;
 
 namespace CleanArchMvc.Domain.Interfaces
 {
-    internal interface ICategoryRepository : IBaseRepository<Category>
+    public interface ICategoryRepository
     {
-
+        Task<IEnumerable<Category>> GetAllCategoriesAsync();
+        Task<Category> GetCategoryByIdAsync(int? id);
+        Task<Category> CreateCategoryAsync(Category category);
+        Task<Category> UpdateCategoryAsync(Category category);
+        Task<Category> RemoveCategoryAsync(Category category);
     }
 }

@@ -3,8 +3,13 @@ using CleanArchMvc.Domain.Interfaces.Base;
 
 namespace CleanArchMvc.Domain.Interfaces
 {
-    public interface IProductRepository : IBaseRepository<Product>
+    public interface IProductRepository
     {
+        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<Product> GetProductByIdAsync(int? id);
+        Task<Product> CreateProductAsync(Product product);
+        Task<Product> UpdateProductAsync(Product product);
+        Task<Product> RemoveProductAsync(Product product);
         Task<Product> GetProductCategoryAsync(int? id);
     }
 }
