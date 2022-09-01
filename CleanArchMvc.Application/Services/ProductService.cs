@@ -1,62 +1,74 @@
 ﻿using AutoMapper;
 using CleanArchMvc.Application.DTOs;
 using CleanArchMvc.Application.Interfaces;
-using CleanArchMvc.Domain.Entities;
-using CleanArchMvc.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CleanArchMvc.Application.Products.Commands;
+using CleanArchMvc.Application.Products.Queries;
+using MediatR;
 
 namespace CleanArchMvc.Application.Services
 {
     public class ProductService : IProductService
     {
         private IMapper _mapper;
-        private IProductRepository _productRepository;
+        private IMediator _mediator;
+        //private IProductRepository _productRepository;
 
-        public ProductService(IProductRepository productRepository, IMapper mapper)
+        public ProductService(IMapper mapper, IMediator mediator)
         {
-            _productRepository = productRepository ?? 
-                throw new ArgumentNullException(nameof(productRepository));
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         public async Task Add(ProductDTO productDTO)
         {
-            var productEntity = _mapper.Map<Product>(productDTO);
-            await _productRepository.CreateProductAsync(productEntity);
+            var productCreateCommand = _mapper.Map<ProductCreateCommand>(productDTO);
+            await _mediator.Send(productCreateCommand);
         }
 
         public async Task<ProductDTO> GetById(int? id)
         {
-            var productEntity = await _productRepository.GetProductByIdAsync(id);
-            return _mapper.Map<ProductDTO>(productEntity);
+            var productByIdQuery = new GetProductByIdQuery(id.Value);
+            
+            if (productByIdQuery == null) throw new Exception($"Nenhum produto foi encontrado");
+
+            var result = await _mediator.Send(productByIdQuery);
+            
+            return _mapper.Map<ProductDTO>(result);
         }
 
         public async Task<ProductDTO> GetProductCategory(int? id)
         {
-            var productEntity = await _productRepository.GetProductCategoryAsync(id);
-            return _mapper.Map<ProductDTO>(productEntity);
+            var productCategoryByIdQuery = new GetProductCategoryByIdQuery(id.Value);
+
+            if (productCategoryByIdQuery == null) throw new Exception($"Nenhum produto foi encontrado");
+
+            var result = await _mediator.Send(productCategoryByIdQuery);
+
+            return _mapper.Map<ProductDTO>(result);
         }
 
         public async Task<IEnumerable<ProductDTO>> GetProducts()
         {
-            var productEntities = await _productRepository.GetAllProductsAsync();
-            return _mapper.Map<IEnumerable<ProductDTO>>(productEntities);
+            var productsQuery = new GetProductsQuery();
+
+            if (productsQuery == null) throw new Exception($"Não foram encontrados produtos");
+
+            var result = _mediator.Send(productsQuery);
+
+            return _mapper.Map<IEnumerable<ProductDTO>>(result);
         }
 
         public async Task Remove(ProductDTO productDTO)
         {
-            var productEntity = _mapper.Map<Product>(productDTO);
-            await _productRepository.RemoveProductAsync(productEntity);
+            var productRemoveCommand = new ProductRemoveCommand(productDTO.Id);
+            if (productRemoveCommand == null) throw new Exception($"Produto não encontrado");
+            await _mediator.Send(productRemoveCommand);
         }
 
         public async Task Update(ProductDTO productDTO)
         {
-            var productEntity = _mapper.Map<Product>(productDTO);
-            await _productRepository.UpdateProductAsync(productEntity);
+            var productUpdateCommand = _mapper.Map<ProductUpdateCommand>(productDTO);
+            await _mediator.Send(productUpdateCommand);
         }
     }
 }
