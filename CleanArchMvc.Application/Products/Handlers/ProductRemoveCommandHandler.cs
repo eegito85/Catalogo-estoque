@@ -21,7 +21,7 @@ namespace CleanArchMvc.Application.Products.Handlers
 
             if (product == null) throw new ApplicationException($"Produto não encontrado");
 
-            return await _productRepository.RemoveProductAsync(product);
+            return await _productRepository.RemoveProductAsync(product.Id);
         }
     }
 }

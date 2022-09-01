@@ -11,8 +11,7 @@ namespace CleanArchMvc.Application.Services
     {
         private IMapper _mapper;
         private IMediator _mediator;
-        //private IProductRepository _productRepository;
-
+        
         public ProductService(IMapper mapper, IMediator mediator)
         {
             _mapper = mapper;
@@ -53,14 +52,14 @@ namespace CleanArchMvc.Application.Services
 
             if (productsQuery == null) throw new Exception($"Não foram encontrados produtos");
 
-            var result = _mediator.Send(productsQuery);
+            var result = await _mediator.Send(productsQuery);
 
             return _mapper.Map<IEnumerable<ProductDTO>>(result);
         }
 
-        public async Task Remove(ProductDTO productDTO)
+        public async Task Remove(int id)
         {
-            var productRemoveCommand = new ProductRemoveCommand(productDTO.Id);
+            var productRemoveCommand = new ProductRemoveCommand(id);
             if (productRemoveCommand == null) throw new Exception($"Produto não encontrado");
             await _mediator.Send(productRemoveCommand);
         }

@@ -44,8 +44,10 @@ namespace CleanArchMvc.Infra.Data.Repositories
                 SingleOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Product> RemoveProductAsync(Product product)
+        public async Task<Product> RemoveProductAsync(int id)
         {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return null;
             _context.Remove(product);
             await _context.SaveChangesAsync();
             return product;
