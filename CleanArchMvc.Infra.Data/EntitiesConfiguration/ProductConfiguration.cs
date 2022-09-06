@@ -13,8 +13,6 @@ namespace CleanArchMvc.Infra.Data.EntitiesConfiguration
             builder.Property(p => p.Description).HasMaxLength(200).IsRequired();
             
             builder.Property(p => p.Price).HasPrecision(10, 2);
-
-            builder.HasOne(c => c.Category).WithMany(e => e.Products).HasForeignKey(f => f.CategoryId);
         }
     }
 }
