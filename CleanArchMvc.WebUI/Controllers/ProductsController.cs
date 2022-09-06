@@ -2,6 +2,7 @@
 using CleanArchMvc.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CleanArchMvc.WebUI.Controllers
 {
@@ -72,6 +73,7 @@ namespace CleanArchMvc.WebUI.Controllers
             return View(productDto);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet()]
         public async Task<IActionResult> Delete(int? id)
         {
